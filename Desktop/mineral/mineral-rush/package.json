@@ -12,7 +12,10 @@
     "format": "prettier --write \"src/**/*.{ts,tsx,json,md}\"",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "sim": "tsx tools/balance-sim.ts",
+    "sim:1k": "tsx tools/balance-sim.ts --runs 1000",
+    "sim:no-cards": "tsx tools/balance-sim.ts --runs 1000 --pickCards false"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.45.0",
@@ -33,6 +36,7 @@
     "eslint-plugin-react-refresh": "^0.4.14",
     "jsdom": "^25.0.1",
     "prettier": "^3.3.3",
+    "tsx": "^4.19.0",
     "typescript": "~5.6.3",
     "vite": "^5.4.10",
     "vitest": "^2.1.4"

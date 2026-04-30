@@ -1,0 +1,13 @@
+{
+  "stages": [
+    {
+      "id": "open_pit",
+      "name": { "ko": "노천광", "en": "Open Pit" },
+      "depthRange": [1, 5],
+      "biome": "surface",
+      "veinHpBase": 200,
+      "veinHpPerDepth": 1.4,
+      "description": { "ko": "햇볕이 드는 표층 광맥.", "en": "Surface vein under daylight." }
+    }
+  ]
+}

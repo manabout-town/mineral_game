@@ -1,0 +1,55 @@
+{
+  "cards": [
+    {
+      "id": "sharp_edge",
+      "name": { "ko": "예리한 날", "en": "Sharp Edge" },
+      "rarity": "common",
+      "effect": "damage_mul",
+      "magnitude": 0.15,
+      "description": { "ko": "곡괭이 데미지 +15%", "en": "Pickaxe damage +15%" }
+    },
+    {
+      "id": "steady_hands",
+      "name": { "ko": "안정된 손", "en": "Steady Hands" },
+      "rarity": "common",
+      "effect": "combo_window_ms",
+      "magnitude": 300,
+      "description": { "ko": "콤보 유지 시간 +300ms", "en": "Combo window +300ms" }
+    },
+    {
+      "id": "appraiser_eye",
+      "name": { "ko": "감정사의 눈", "en": "Appraiser's Eye" },
+      "rarity": "common",
+      "effect": "ore_value_mul",
+      "magnitude": 0.2,
+      "description": { "ko": "광석 가치 +20%", "en": "Ore value +20%" }
+    },
+    {
+      "id": "lucky_strike",
+      "name": { "ko": "행운의 일격", "en": "Lucky Strike" },
+      "rarity": "common",
+      "effect": "drop_rate_mul",
+      "magnitude": 0.25,
+      "description": { "ko": "드랍률 +25%", "en": "Drop rate +25%" }
+    },
+    {
+      "id": "deep_breath",
+      "name": { "ko": "심호흡", "en": "Deep Breath" },
+      "rarity": "rare",
+      "effect": "damage_mul",
+      "magnitude": 0.4,
+      "description": { "ko": "곡괭이 데미지 +40%", "en": "Pickaxe damage +40%" }
+    },
+    {
+      "id": "miners_focus",
+      "name": { "ko": "광부의 집중", "en": "Miner's Focus" },
+      "rarity": "rare",
+      "effect": "combo_max_bonus",
+      "magnitude": 0.02,
+      "description": {
+        "ko": "콤보 1당 데미지 +2% (최대 무한)",
+        "en": "Damage +2% per combo stack"
+      }
+    }
+  ]
+}
