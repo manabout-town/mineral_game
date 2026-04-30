@@ -25,9 +25,12 @@ export type Action =
   | MineHitAction
   | OreCollectedAction
   | ComboBreakAction
+  | VeinDestroyedAction
+  | DepthAdvanceAction
   // -- Cards (Phase 2 본격 사용) --
   | CardOfferGeneratedAction
   | CardPickedAction
+  | CardRerollAction
   // -- Meta (Phase 2~3) --
   | MetaRunRewardAction
   | SkillNodeUnlockAction
@@ -58,7 +61,7 @@ export interface RunTickAction {
 
 export interface RunEndAction {
   type: 'RUN_END';
-  payload: { reason: 'timeout' | 'quit' | 'death' };
+  payload: { reason: 'timeout' | 'quit' | 'death'; now: number };
 }
 
 export interface MineHitAction {
@@ -76,6 +79,16 @@ export interface ComboBreakAction {
   payload: { t: GameTimeMs };
 }
 
+export interface VeinDestroyedAction {
+  type: 'VEIN_DESTROYED';
+  payload: { t: GameTimeMs };
+}
+
+export interface DepthAdvanceAction {
+  type: 'DEPTH_ADVANCE';
+  payload: { t: GameTimeMs; newDepth: number };
+}
+
 export interface CardOfferGeneratedAction {
   type: 'CARD_OFFER_GENERATED';
   payload: { t: GameTimeMs; cardIds: CardId[]; rerollCost: number };
@@ -84,6 +97,11 @@ export interface CardOfferGeneratedAction {
 export interface CardPickedAction {
   type: 'CARD_PICKED';
   payload: { t: GameTimeMs; cardId: CardId };
+}
+
+export interface CardRerollAction {
+  type: 'CARD_REROLL';
+  payload: { t: GameTimeMs; cost: number };
 }
 
 export interface MetaRunRewardAction {

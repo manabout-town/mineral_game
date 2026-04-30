@@ -8,6 +8,8 @@
 import type { GameState } from '../State.ts';
 import type { Action } from '../Actions.ts';
 import { runReducer } from './runReducer.ts';
+import { economyReducer } from './economyReducer.ts';
+import { metaReducer } from './metaReducer.ts';
 
 export function rootReducer(state: GameState, action: Action): GameState {
   switch (action.type) {
@@ -24,25 +26,34 @@ export function rootReducer(state: GameState, action: Action): GameState {
       return runReducer.mineHit(state, action);
     case 'ORE_COLLECTED':
       return runReducer.oreCollected(state, action);
-
-    // -- Phase 2~3 placeholders --
     case 'COMBO_BREAK':
+      return runReducer.comboBreak(state, action);
+    case 'VEIN_DESTROYED':
+      return runReducer.veinDestroyed(state, action);
+    case 'DEPTH_ADVANCE':
+      return runReducer.depthAdvance(state, action);
+
+    // -- Cards --
     case 'CARD_OFFER_GENERATED':
+      return runReducer.cardOfferGenerated(state, action);
     case 'CARD_PICKED':
+      return runReducer.cardPicked(state, action);
+    case 'CARD_REROLL':
+      return runReducer.cardReroll(state, action);
+
+    // -- Economy / Meta --
     case 'META_RUN_REWARD':
+      return economyReducer.applyRunReward(state, action);
     case 'SKILL_NODE_UNLOCK':
-      // Phase 2에서 구현. 일단 no-op.
-      return state;
+      return metaReducer.unlockSkillNode(state, action);
 
     // -- Persistence --
     case 'STATE_HYDRATE':
       return action.payload.state;
     case 'SCHEMA_MIGRATE':
-      // 마이그레이션 자체는 PersistenceSystem에서 수행. reducer는 metadata만 갱신.
       return { ...state, schemaVersion: action.payload.toVersion };
 
     default: {
-      // 컴파일러가 모든 케이스를 처리했는지 검증
       const _exhaustive: never = action;
       void _exhaustive;
       return state;

@@ -1,0 +1,35 @@
+{
+  "$schema": "../src/core/content/schemas/mineral.schema.json",
+  "minerals": [
+    {
+      "id": "copper",
+      "name": { "ko": "구리", "en": "Copper" },
+      "rarity": "common",
+      "baseValue": 1,
+      "color": "#b87333",
+      "depthMin": 1,
+      "depthMax": 99,
+      "dropWeight": 100
+    },
+    {
+      "id": "iron",
+      "name": { "ko": "철", "en": "Iron" },
+      "rarity": "common",
+      "baseValue": 3,
+      "color": "#a7a7a7",
+      "depthMin": 1,
+      "depthMax": 99,
+      "dropWeight": 60
+    },
+    {
+      "id": "gold",
+      "name": { "ko": "금", "en": "Gold" },
+      "rarity": "uncommon",
+      "baseValue": 12,
+      "color": "#ffd700",
+      "depthMin": 2,
+      "depthMax": 99,
+      "dropWeight": 12
+    }
+  ]
+}

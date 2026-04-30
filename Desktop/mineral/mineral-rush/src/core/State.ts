@@ -66,6 +66,8 @@ export interface RunState {
   runId: RunId;
   /** 결정론적 RNG seed — 서버 리플레이 검증용 */
   seed: Seed;
+  /** RNG 현재 state — 직렬화 가능 (Mulberry32.getState) */
+  rngState: number;
   startedAt: number; // epoch ms
   duration: number; // ms
   remaining: number; // ms
@@ -73,16 +75,64 @@ export interface RunState {
   depth: number;
   stageId: StageId;
   pickaxe: PickaxeStats;
+  /** 현재 광맥 — 쪼개면 다음 광맥 자동 생성 */
+  vein: VeinState;
+  /** 누적 부순 광맥 수 */
+  veinsDestroyed: number;
   /** 런 중 선택된 카드들 */
   cards: ActiveCard[];
+  /** 카드 효과 누적값 — 매 카드 픽 시 재계산 */
+  modifiers: RunModifiers;
   /** 현재 카드 선택지 (있을 때만) */
   cardOffer: CardOffer | null;
   combo: number;
-  comboTimerMs: GameTimeMs | null;
+  /** 콤보 만료 시각 — 절대 게임시간(ms). null이면 비활성. */
+  comboExpiresAt: GameTimeMs | null;
   oresCollected: Record<MineralId, number>;
   damageDealt: number;
   /** 액션 리플레이 — 안티치트 + 디버그 (5계명 §5 Traceable) */
   events: GameEvent[];
+  /** 종료 후 결과 화면 데이터 (RUN_END 액션이 채움) */
+  finished: RunFinishedSummary | null;
+}
+
+export interface VeinState {
+  veinIndex: number;
+  hp: number;
+  maxHp: number;
+  /** 광맥별로 결정된 광물 풀 — 같은 광맥 안에서는 동일 분포 */
+  mineralPool: Array<{ mineralId: MineralId; weight: number }>;
+}
+
+export interface RunModifiers {
+  /** 곡괭이 데미지 곱연산 (1.0 + sum) */
+  damageMul: number;
+  /** 콤보 유지 시간(ms) */
+  comboWindowMs: number;
+  /** 광석 가치 곱연산 */
+  oreValueMul: number;
+  /** 드랍률 곱연산 */
+  dropRateMul: number;
+  /** 콤보 1당 추가 데미지 비율 */
+  comboMaxBonus: number;
+}
+
+export const DEFAULT_RUN_MODIFIERS: RunModifiers = {
+  damageMul: 1,
+  comboWindowMs: 1500,
+  oreValueMul: 1,
+  dropRateMul: 1,
+  comboMaxBonus: 0,
+};
+
+export interface RunFinishedSummary {
+  endedAt: number;
+  reason: 'timeout' | 'quit' | 'death';
+  oresCollected: Record<MineralId, number>;
+  veinsDestroyed: number;
+  cardsPicked: number;
+  /** 메타 화폐로 환산된 광석 (실제 지급은 META_RUN_REWARD에서) */
+  rewardOres: Record<MineralId, number>;
 }
 
 export interface PickaxeStats {
@@ -116,8 +166,10 @@ export type CardRarity = 'common' | 'rare' | 'epic' | 'legendary';
  * 서버에서 reducer를 동일하게 돌려 화폐 정산을 재계산하기 위한 원천 데이터.
  */
 export type GameEvent =
-  | { type: 'mine_hit'; t: GameTimeMs; x: number; y: number }
+  | { type: 'mine_hit'; t: GameTimeMs; x: number; y: number; damage: number; combo: number }
   | { type: 'ore_collected'; t: GameTimeMs; mineralId: MineralId; amount: number }
+  | { type: 'vein_destroyed'; t: GameTimeMs; veinIndex: number }
+  | { type: 'card_offer_generated'; t: GameTimeMs; cardIds: CardId[] }
   | { type: 'card_picked'; t: GameTimeMs; cardId: CardId }
   | { type: 'card_rerolled'; t: GameTimeMs }
   | { type: 'combo_break'; t: GameTimeMs }

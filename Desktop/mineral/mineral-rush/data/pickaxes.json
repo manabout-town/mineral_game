@@ -1,0 +1,14 @@
+{
+  "pickaxes": [
+    {
+      "id": "basic_pickaxe",
+      "name": { "ko": "기본 곡괭이", "en": "Basic Pickaxe" },
+      "damage": 10,
+      "speed": 4,
+      "range": 50,
+      "comboBonus": 0.05,
+      "unlockCost": 0,
+      "description": { "ko": "낡았지만 든든한 첫 도구.", "en": "Worn but reliable starter tool." }
+    }
+  ]
+}
