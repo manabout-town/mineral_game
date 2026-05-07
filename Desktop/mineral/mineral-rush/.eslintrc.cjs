@@ -44,8 +44,9 @@ module.exports = {
           { from: '*', allow: ['shared'] },
           // core는 shared만 의존 가능 (5계명 §1 Pure Logic First)
           { from: 'core', allow: ['shared', 'core'] },
-          // systems는 core, shared 의존 가능
-          { from: 'systems', allow: ['shared', 'core', 'systems'] },
+          // systems는 core, shared, 그리고 platform 인터페이스 의존 가능
+          //   (PersistenceSystem이 IStorage/ISigner 추상에 의존하는 구조 — 구현체 import는 코드 리뷰로 차단)
+          { from: 'systems', allow: ['shared', 'core', 'systems', 'platform'] },
           // platform은 core, systems, shared 의존 가능
           { from: 'platform', allow: ['shared', 'core', 'systems', 'platform'] },
           // view는 모두 의존 가능 (단, 직접 mutation 금지는 코드 리뷰로)

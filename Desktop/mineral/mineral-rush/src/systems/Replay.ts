@@ -42,14 +42,9 @@ export function replayRun(initialState: GameState, events: readonly GameEvent[])
   for (let i = 0; i < events.length; i++) {
     const ev = events[i]!;
     const action = eventToAction(ev);
-    if (!action) {
-      return {
-        ok: false,
-        code: ERROR_CODES.REPLAY_MISMATCH,
-        divergenceAt: i,
-        message: `Cannot map event type to action: ${ev.type}`,
-      };
-    }
+    // null = 재생 불필요한 부수 효과 이벤트 (ore_collected, vein_destroyed 등) → 건너뜀.
+    // 이 이벤트들은 mine_hit·depth_advance 등 실제 액션의 결과로 자동 생성된다.
+    if (!action) continue;
     state = rootReducer(state, action);
     if (!state.run) {
       return { ok: false, code: ERROR_CODES.REPLAY_MISMATCH, divergenceAt: i, message: 'Run lost' };
@@ -70,7 +65,7 @@ function eventToAction(ev: GameEvent): Action | null {
     case 'mine_hit':
       return {
         type: 'MINE_HIT',
-        payload: { t: ev.t, x: ev.x, y: ev.y },
+        payload: { t: ev.t, x: ev.x, y: ev.y, side: ev.side },
       };
     case 'card_picked':
       return { type: 'CARD_PICKED', payload: { t: ev.t, cardId: ev.cardId } };

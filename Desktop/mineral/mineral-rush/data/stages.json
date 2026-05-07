@@ -8,6 +8,42 @@
       "veinHpBase": 200,
       "veinHpPerDepth": 1.4,
       "description": { "ko": "햇볕이 드는 표층 광맥.", "en": "Surface vein under daylight." }
+    },
+    {
+      "id": "cave",
+      "name": { "ko": "동굴", "en": "Cave" },
+      "depthRange": [6, 12],
+      "biome": "cave",
+      "veinHpBase": 720,
+      "veinHpPerDepth": 1.45,
+      "description": { "ko": "어두운 동굴 — 박쥐와 광맥이 공존한다.", "en": "Dark caves — bats and veins together." }
+    },
+    {
+      "id": "deep_shaft",
+      "name": { "ko": "심층 갱도", "en": "Deep Shaft" },
+      "depthRange": [13, 21],
+      "biome": "deep",
+      "veinHpBase": 3200,
+      "veinHpPerDepth": 1.5,
+      "description": { "ko": "지층의 압력이 느껴진다. 더 큰 광맥 → 더 큰 보상.", "en": "Crushing pressure. Bigger vein, bigger reward." }
+    },
+    {
+      "id": "magma_layer",
+      "name": { "ko": "마그마 층", "en": "Magma Layer" },
+      "depthRange": [22, 28],
+      "biome": "magma",
+      "veinHpBase": 14000,
+      "veinHpPerDepth": 1.55,
+      "description": { "ko": "용암이 흐르는 단조의 자리.", "en": "Where lava forges everything." }
+    },
+    {
+      "id": "core",
+      "name": { "ko": "코어층", "en": "Core" },
+      "depthRange": [29, 99],
+      "biome": "core",
+      "veinHpBase": 80000,
+      "veinHpPerDepth": 1.6,
+      "description": { "ko": "행성의 심장. 전설의 광물이 잠든 곳.", "en": "Planet's heart. Where legends sleep." }
     }
   ]
 }

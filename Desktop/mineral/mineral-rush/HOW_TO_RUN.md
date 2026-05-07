@@ -33,13 +33,14 @@ npm run dev
 ## 4. 자동 검증
 
 ```bash
-npm run typecheck    # TypeScript 타입 검사
-npm test             # Vitest (runReducer / rules / replay 결정론)
-npm run lint         # ESLint + 4-Layer 의존 방향 검증
-npm run sim:1k       # 1000회 자동 시뮬레이션 (불변식 + 카드 픽률)
+npm run typecheck         # TypeScript 타입 검사
+npm test                  # Vitest (runReducer / rules / replay / skillTree / depthProgress)
+npm run lint              # ESLint + 4-Layer 의존 방향 검증
+npm run validate-content  # data/*.json 시트 무결성 (id/곡선/prerequisite/cycle)
+npm run sim:1k            # 1000회 자동 시뮬레이션 (불변식 + 카드 픽률)
 ```
 
-네 명령 모두 종료 코드 0이어야 통과.
+다섯 명령 모두 종료 코드 0이어야 통과.
 
 ## 4-1. Phase 2 체감 검증
 
@@ -54,7 +55,22 @@ npm run sim:1k       # 1000회 자동 시뮬레이션 (불변식 + 카드 픽률
 7. ✅ 30초 끝 → **결과 화면** (광석 목록 + 가치) → "보상 받고 다음 런" 버튼
 8. ✅ 새로고침해도 `runs` / `💎` 카운터 보존
 
-## 4-2. balance-sim 출력 예시
+## 4-2. Phase 3 체감 검증
+
+브라우저에서:
+
+1. ✅ 부팅 시 **Lobby 화면** — `MINERAL RUSH` 타이틀, PLAY 버튼, 스킬트리 패널
+2. ✅ **PLAY** 클릭 → 추천 깊이로 런 시작 (총 런 수에 따라 D1~D3)
+3. ✅ 인게임 우상단 **‖ Pause** 버튼 → Lobby로 즉시 복귀 (현재 런 quit)
+4. ✅ Result 화면 "보상 받고 다음 런" → Lobby로 복귀 (lobby 모드)
+5. ✅ 스킬트리에서 root 노드(테두리만 있는 사각형) 클릭 → 크리스탈 차감 + 노드 색상 활성
+6. ✅ 활성 노드 다시 클릭 → 레벨업 (비용 곡선 적용)
+7. ✅ 깊이 진행 — 광맥 3개 부수면 자동 D1→D2 (events에 `depth_advance`)
+8. ✅ 깊이가 5 넘어가면 stage가 `cave`로 자동 전환 (광맥 HP 베이스 상승)
+9. ✅ Lobby의 **플레이테스트 로그 Export** → JSON 파일 다운로드
+10. ✅ Lobby의 **저장 데이터 초기화** → confirm 후 새 게임 (runs=0)
+
+## 4-3. balance-sim 출력 예시
 
 ```
 === Mineral Rush — Balance Sim ===

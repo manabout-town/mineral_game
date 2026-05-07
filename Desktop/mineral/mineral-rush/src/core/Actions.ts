@@ -34,6 +34,7 @@ export type Action =
   // -- Meta (Phase 2~3) --
   | MetaRunRewardAction
   | SkillNodeUnlockAction
+  | SkillNodeLevelUpAction
   // -- Persistence / System --
   | StateHydrateAction
   | SchemaMigrateAction;
@@ -66,7 +67,13 @@ export interface RunEndAction {
 
 export interface MineHitAction {
   type: 'MINE_HIT';
-  payload: { t: GameTimeMs; x: number; y: number };
+  payload: {
+    t: GameTimeMs;
+    x: number;
+    y: number;
+    /** Timber Rush 메카닉: 플레이어가 탭한 방향 */
+    side: 'left' | 'right';
+  };
 }
 
 export interface OreCollectedAction {
@@ -111,6 +118,11 @@ export interface MetaRunRewardAction {
 
 export interface SkillNodeUnlockAction {
   type: 'SKILL_NODE_UNLOCK';
+  payload: { nodeId: SkillNodeId };
+}
+
+export interface SkillNodeLevelUpAction {
+  type: 'SKILL_NODE_LEVEL_UP';
   payload: { nodeId: SkillNodeId };
 }
 

@@ -27,8 +27,14 @@ jobs:
       - name: Typecheck
         run: npm run typecheck
 
+      - name: Validate content (JSON 데이터 시트)
+        run: npm run validate-content
+
       - name: Unit tests
         run: npm test
+
+      - name: Balance sim 1k (불변식 회귀)
+        run: npm run sim:1k
 
       - name: Build
         run: npm run build

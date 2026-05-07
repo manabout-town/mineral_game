@@ -13,6 +13,7 @@ import type { IStorage } from '../platform/IStorage.ts';
 import type { ISigner } from '../platform/ISigner.ts';
 import { SCHEMA_VERSION, ERROR_CODES } from '../shared/constants.ts';
 import { logger } from './Logger.ts';
+import { migrationsByVersion } from './migrations/index.ts';
 
 const SAVE_KEY = 'game_state';
 
@@ -79,23 +80,31 @@ export class PersistenceSystem {
       });
       throw new Error(ERROR_CODES.MIGRATION_FAILED);
     }
-    // Phase 2~ 마이그레이션 체인
+    // 마이그레이션 체인 적용
     let current = state;
+    let safety = 0;
     while (current.schemaVersion < SCHEMA_VERSION) {
-      const fn = MIGRATIONS[current.schemaVersion];
+      const fn = migrationsByVersion[current.schemaVersion];
       if (!fn) {
         logger.error(ERROR_CODES.MIGRATION_FAILED, 'Missing migration step', {
           fromVersion: current.schemaVersion,
         });
         throw new Error(ERROR_CODES.MIGRATION_FAILED);
       }
-      current = fn(current);
+      const next = fn(current);
+      // 안전장치: 마이그레이션이 schemaVersion을 진행시키지 않으면 무한루프 방지
+      if (next.schemaVersion <= current.schemaVersion) {
+        logger.error(ERROR_CODES.MIGRATION_FAILED, 'Migration did not advance schemaVersion', {
+          fromVersion: current.schemaVersion,
+        });
+        throw new Error(ERROR_CODES.MIGRATION_FAILED);
+      }
+      current = next;
+      if (++safety > 50) {
+        logger.error(ERROR_CODES.MIGRATION_FAILED, 'Migration chain too long (>50)');
+        throw new Error(ERROR_CODES.MIGRATION_FAILED);
+      }
     }
     return current;
   }
 }
-
-/** 버전 N → N+1 변환. Phase 2부터 채워짐. */
-const MIGRATIONS: Record<number, (s: GameState) => GameState> = {
-  // 0: (s) => ({ ...s, schemaVersion: 1 }), // 예시
-};

@@ -22,6 +22,16 @@
       "dropWeight": 60
     },
     {
+      "id": "silver",
+      "name": { "ko": "은", "en": "Silver" },
+      "rarity": "uncommon",
+      "baseValue": 6,
+      "color": "#cfcfcf",
+      "depthMin": 2,
+      "depthMax": 99,
+      "dropWeight": 28
+    },
+    {
       "id": "gold",
       "name": { "ko": "금", "en": "Gold" },
       "rarity": "uncommon",
@@ -30,6 +40,86 @@
       "depthMin": 2,
       "depthMax": 99,
       "dropWeight": 12
+    },
+    {
+      "id": "ruby",
+      "name": { "ko": "루비", "en": "Ruby" },
+      "rarity": "rare",
+      "baseValue": 28,
+      "color": "#e0115f",
+      "depthMin": 4,
+      "depthMax": 99,
+      "dropWeight": 6
+    },
+    {
+      "id": "sapphire",
+      "name": { "ko": "사파이어", "en": "Sapphire" },
+      "rarity": "rare",
+      "baseValue": 30,
+      "color": "#0f52ba",
+      "depthMin": 5,
+      "depthMax": 99,
+      "dropWeight": 5
+    },
+    {
+      "id": "emerald",
+      "name": { "ko": "에메랄드", "en": "Emerald" },
+      "rarity": "rare",
+      "baseValue": 36,
+      "color": "#50c878",
+      "depthMin": 6,
+      "depthMax": 99,
+      "dropWeight": 4
+    },
+    {
+      "id": "diamond",
+      "name": { "ko": "다이아몬드", "en": "Diamond" },
+      "rarity": "epic",
+      "baseValue": 90,
+      "color": "#b9f2ff",
+      "depthMin": 8,
+      "depthMax": 99,
+      "dropWeight": 2.5
+    },
+    {
+      "id": "obsidian",
+      "name": { "ko": "흑요석", "en": "Obsidian" },
+      "rarity": "epic",
+      "baseValue": 120,
+      "color": "#3d2c4d",
+      "depthMin": 10,
+      "depthMax": 99,
+      "dropWeight": 1.6
+    },
+    {
+      "id": "mithril",
+      "name": { "ko": "미스릴", "en": "Mithril" },
+      "rarity": "legendary",
+      "baseValue": 320,
+      "color": "#9ad9ea",
+      "depthMin": 14,
+      "depthMax": 99,
+      "dropWeight": 0.8
+    },
+    {
+      "id": "adamantite",
+      "name": { "ko": "아다만타이트", "en": "Adamantite" },
+      "rarity": "legendary",
+      "baseValue": 540,
+      "color": "#7e1f1f",
+      "depthMin": 18,
+      "depthMax": 99,
+      "dropWeight": 0.4
+    },
+    {
+      "id": "orichalcum",
+      "name": { "ko": "오리하르콘", "en": "Orichalcum" },
+      "rarity": "legendary",
+      "baseValue": 1200,
+      "color": "#f6c84c",
+      "depthMin": 22,
+      "depthMax": 99,
+      "dropWeight": 0.15
     }
   ]
 }

@@ -1,10 +1,40 @@
-import { defineConfig } from 'vite';
+/// <reference types="vitest" />
+import { defineConfig, type Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'node:path';
 
+// ─── Phase 4-G: 빌드 시 HMAC secret 강제 검증 ───────────────────
+// production 빌드에서 기본값(dev-secret)이 그대로 노출되는 것을 방지.
+// VITE_DEV_HMAC_SECRET이 'dev-secret' 또는 빈 값이면 빌드 실패.
+const DEV_SECRET_DEFAULT = 'dev-secret';
+
+function hmacSecretGuard(): Plugin {
+  return {
+    name: 'hmac-secret-guard',
+    buildStart() {
+      const mode = process.env.NODE_ENV ?? '';
+      const secret = process.env.VITE_DEV_HMAC_SECRET ?? '';
+      if (mode === 'production') {
+        if (!secret || secret === DEV_SECRET_DEFAULT) {
+          throw new Error(
+            '[hmac-secret-guard] VITE_DEV_HMAC_SECRET is missing or still set to the ' +
+            'default dev value. Set a strong secret in your CI/CD environment before ' +
+            'building for production.',
+          );
+        }
+        if (secret.length < 32) {
+          throw new Error(
+            '[hmac-secret-guard] VITE_DEV_HMAC_SECRET must be at least 32 characters long.',
+          );
+        }
+      }
+    },
+  };
+}
+
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), hmacSecretGuard()],
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src'),

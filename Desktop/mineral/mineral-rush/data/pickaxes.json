@@ -9,6 +9,76 @@
       "comboBonus": 0.05,
       "unlockCost": 0,
       "description": { "ko": "낡았지만 든든한 첫 도구.", "en": "Worn but reliable starter tool." }
+    },
+    {
+      "id": "iron_pickaxe",
+      "name": { "ko": "철 곡괭이", "en": "Iron Pickaxe" },
+      "damage": 18,
+      "speed": 5,
+      "range": 55,
+      "comboBonus": 0.06,
+      "unlockCost": 200,
+      "description": { "ko": "단단한 철로 벼린 표준 광부 장비.", "en": "Forged iron, the miner's standard." }
+    },
+    {
+      "id": "steel_pickaxe",
+      "name": { "ko": "강철 곡괭이", "en": "Steel Pickaxe" },
+      "damage": 32,
+      "speed": 6,
+      "range": 58,
+      "comboBonus": 0.07,
+      "unlockCost": 800,
+      "description": { "ko": "탄소를 더한 합금. 더 깊이, 더 빠르게.", "en": "Carbon-alloyed for depth and speed." }
+    },
+    {
+      "id": "ruby_pickaxe",
+      "name": { "ko": "루비 곡괭이", "en": "Ruby Pickaxe" },
+      "damage": 52,
+      "speed": 6,
+      "range": 60,
+      "comboBonus": 0.09,
+      "unlockCost": 2400,
+      "description": { "ko": "루비 헤드가 광물의 결을 파고든다.", "en": "Ruby head bites along the grain." }
+    },
+    {
+      "id": "diamond_pickaxe",
+      "name": { "ko": "다이아 곡괭이", "en": "Diamond Pickaxe" },
+      "damage": 88,
+      "speed": 7,
+      "range": 64,
+      "comboBonus": 0.11,
+      "unlockCost": 7200,
+      "description": { "ko": "다이아몬드 가공 칼날. 거의 모든 광맥을 파낸다.", "en": "Diamond edge — splits nearly any vein." }
+    },
+    {
+      "id": "obsidian_pickaxe",
+      "name": { "ko": "흑요석 곡괭이", "en": "Obsidian Pickaxe" },
+      "damage": 138,
+      "speed": 7,
+      "range": 66,
+      "comboBonus": 0.13,
+      "unlockCost": 18000,
+      "description": { "ko": "마그마층에서 단조된 의식용 곡괭이.", "en": "Forged in magma — ceremonial weight." }
+    },
+    {
+      "id": "mithril_pickaxe",
+      "name": { "ko": "미스릴 곡괭이", "en": "Mithril Pickaxe" },
+      "damage": 210,
+      "speed": 8,
+      "range": 70,
+      "comboBonus": 0.16,
+      "unlockCost": 50000,
+      "description": { "ko": "한없이 가볍고, 한없이 단단한.", "en": "Light as a feather, hard as legend." }
+    },
+    {
+      "id": "orichalcum_pickaxe",
+      "name": { "ko": "오리하르콘 곡괭이", "en": "Orichalcum Pickaxe" },
+      "damage": 360,
+      "speed": 9,
+      "range": 76,
+      "comboBonus": 0.2,
+      "unlockCost": 200000,
+      "description": { "ko": "전설의 정점. 코어층 광맥도 깨뜨린다.", "en": "Legendary. Cracks even the core vein." }
     }
   ]
 }

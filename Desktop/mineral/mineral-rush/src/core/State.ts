@@ -56,6 +56,8 @@ export interface LifetimeStats {
   totalOresMined: number;
   bestRunScore: number;
   totalPlayTimeMs: number;
+  /** schema v2 필드 — 단일 런 최고 크리스탈 보상 */
+  bestRunValueCrystals: number;
 }
 
 // ============================================================
@@ -88,6 +90,12 @@ export interface RunState {
   combo: number;
   /** 콤보 만료 시각 — 절대 게임시간(ms). null이면 비활성. */
   comboExpiresAt: GameTimeMs | null;
+  /** Timber Rush 메카닉: 플레이어가 현재 서 있는 쪽 */
+  playerSide: 'left' | 'right';
+  /** EXP — 카드 오퍼 트리거용 누적 경험치 */
+  exp: number;
+  /** 다음 카드 오퍼까지 필요한 EXP */
+  expThreshold: number;
   oresCollected: Record<MineralId, number>;
   damageDealt: number;
   /** 액션 리플레이 — 안티치트 + 디버그 (5계명 §5 Traceable) */
@@ -102,6 +110,11 @@ export interface VeinState {
   maxHp: number;
   /** 광맥별로 결정된 광물 풀 — 같은 광맥 안에서는 동일 분포 */
   mineralPool: Array<{ mineralId: MineralId; weight: number }>;
+  /**
+   * Timber Rush 메카닉: 이번 세그먼트에서 막힌 쪽 (가시/돌기).
+   * 플레이어가 이 쪽을 탭하면 미스 (콤보 리셋). null이면 제한 없음.
+   */
+  dangerSide: 'left' | 'right' | null;
 }
 
 export interface RunModifiers {
@@ -133,6 +146,8 @@ export interface RunFinishedSummary {
   cardsPicked: number;
   /** 메타 화폐로 환산된 광석 (실제 지급은 META_RUN_REWARD에서) */
   rewardOres: Record<MineralId, number>;
+  /** 이번 런 기본 크리스탈 보상 (메타 보너스 미포함) */
+  rewardCrystals: number;
 }
 
 export interface PickaxeStats {
@@ -166,7 +181,7 @@ export type CardRarity = 'common' | 'rare' | 'epic' | 'legendary';
  * 서버에서 reducer를 동일하게 돌려 화폐 정산을 재계산하기 위한 원천 데이터.
  */
 export type GameEvent =
-  | { type: 'mine_hit'; t: GameTimeMs; x: number; y: number; damage: number; combo: number }
+  | { type: 'mine_hit'; t: GameTimeMs; x: number; y: number; damage: number; combo: number; side: 'left' | 'right'; miss: boolean }
   | { type: 'ore_collected'; t: GameTimeMs; mineralId: MineralId; amount: number }
   | { type: 'vein_destroyed'; t: GameTimeMs; veinIndex: number }
   | { type: 'card_offer_generated'; t: GameTimeMs; cardIds: CardId[] }
@@ -222,6 +237,7 @@ export function createInitialState(playerId: string = 'local-dev', now: number =
         totalOresMined: 0,
         bestRunScore: 0,
         totalPlayTimeMs: 0,
+        bestRunValueCrystals: 0,
       },
     },
     run: null,

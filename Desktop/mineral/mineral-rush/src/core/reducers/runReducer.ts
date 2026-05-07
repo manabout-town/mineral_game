@@ -6,7 +6,6 @@
  */
 
 import type { GameState, RunState, RunModifiers, VeinState, GameEvent } from '../State.ts';
-import { DEFAULT_RUN_MODIFIERS } from '../State.ts';
 import type {
   RunStartAction,
   RunTickAction,
@@ -33,6 +32,7 @@ import {
   applyCardEffect,
   progressFromVeinsDestroyed,
 } from '../rules/cardOffer.ts';
+import { computeMetaModifiers } from '../rules/skillTree.ts';
 
 // ============================================================
 // Helpers
@@ -72,13 +72,11 @@ function buildVein(stageId: string, depth: number, veinIndex: number, rngState: 
   if (!stage) throw new Error(`Unknown stage: ${stageId}`);
   const hp = computeVeinHp(stage, depth, veinIndex);
   const rng = new Mulberry32(rngState);
-  // mineralPool은 광맥 시작 시 결정 — 같은 광맥 안에선 동일 분포
   const pool = buildMineralPool(content, depth);
-  // RNG state 진행 (mineralPool 결정 시 RNG 호출 안 했지만, 깊이 변경 시 RNG가 한 칸 먹게 해서
-  // 광맥마다 미세한 다양성을 가짐 — 결정론은 유지)
-  rng.next();
+  // Timber Rush: dangerSide 결정 (50/50, null 없음 — 항상 한 쪽이 막힘)
+  const dangerSide: 'left' | 'right' = rng.next() < 0.5 ? 'left' : 'right';
   return {
-    vein: { veinIndex, hp, maxHp: hp, mineralPool: pool },
+    vein: { veinIndex, hp, maxHp: hp, mineralPool: pool, dangerSide },
     rngState: rng.getState(),
   };
 }
@@ -95,6 +93,8 @@ export function start(state: GameState, action: RunStartAction): GameState {
   const { runId, seed, stageId, depth, durationMs } = action.payload;
 
   const { vein, rngState } = buildVein(stageId as string, depth, 0, seed);
+  // 메타 진행도(skillTree) 효과를 baseline 모디파이어로 적용. 카드는 이 위에 누적.
+  const baselineModifiers = computeMetaModifiers(state);
 
   const run: RunState = {
     runId,
@@ -109,10 +109,13 @@ export function start(state: GameState, action: RunStartAction): GameState {
     vein,
     veinsDestroyed: 0,
     cards: [],
-    modifiers: { ...DEFAULT_RUN_MODIFIERS },
+    modifiers: baselineModifiers,
     cardOffer: null,
     combo: 0,
     comboExpiresAt: null,
+    playerSide: 'right',   // Timber Rush: 시작 시 오른쪽에 위치
+    exp: 0,
+    expThreshold: 20,
     oresCollected: {},
     damageDealt: 0,
     events: [],
@@ -159,6 +162,7 @@ export function end(state: GameState, action: RunEndAction): GameState {
   for (const [id, count] of Object.entries(state.run.oresCollected)) {
     rewardOres[id] = Math.round(count * state.run.modifiers.oreValueMul);
   }
+  const rewardCrystals = state.run.veinsDestroyed * 5;
   const finished: NonNullable<RunState['finished']> = {
     endedAt: action.payload.now,
     reason: action.payload.reason,
@@ -166,6 +170,7 @@ export function end(state: GameState, action: RunEndAction): GameState {
     veinsDestroyed: state.run.veinsDestroyed,
     cardsPicked: state.run.cards.length,
     rewardOres: rewardOres as Record<never, number>,
+    rewardCrystals,
   };
   return {
     ...state,
@@ -184,21 +189,45 @@ export function end(state: GameState, action: RunEndAction): GameState {
 export function mineHit(state: GameState, action: MineHitAction): GameState {
   if (!state.run || state.run.finished) return state;
   let run = state.run;
-
-  // 콤보 갱신 — 콤보 만료 전에 새 타격이면 +1
+  const { side } = action.payload;
   const e = elapsed(run);
+
+  // ── Timber Rush 핵심 판정 ─────────────────────────────────────
+  // 플레이어가 탭한 방향 = dangerSide → MISS (콤보 리셋, 데미지 없음)
+  const isMiss = run.vein.dangerSide !== null && side === run.vein.dangerSide;
+
+  // 플레이어 위치 업데이트 (미스든 성공이든 해당 쪽으로 이동)
+  run = { ...run, playerSide: side };
+
+  if (isMiss) {
+    // MISS: 콤보 끊김. 이벤트 기록 후 dangerSide 교체
+    run = appendRunEvent({ ...run, combo: 0, comboExpiresAt: null }, {
+      type: 'mine_hit',
+      t: e,
+      x: action.payload.x,
+      y: action.payload.y,
+      damage: 0,
+      combo: 0,
+      side,
+      miss: true,
+    });
+    // 미스 후 새 dangerSide 생성 (RNG)
+    const rngMiss = new Mulberry32(run.rngState);
+    const newDanger: 'left' | 'right' = rngMiss.next() < 0.5 ? 'left' : 'right';
+    run = {
+      ...run,
+      rngState: rngMiss.getState(),
+      vein: { ...run.vein, dangerSide: newDanger },
+    };
+    return { ...state, run };
+  }
+
+  // ── HIT: 정상 채굴 ───────────────────────────────────────────
   const stillInCombo = run.comboExpiresAt !== null && e < run.comboExpiresAt;
   const newCombo = stillInCombo ? run.combo + 1 : 1;
   const comboExpiresAt = (e + run.modifiers.comboWindowMs) as GameTimeMs;
 
-  // 데미지 계산
-  const dmg = computeDamage({
-    pickaxe: run.pickaxe,
-    modifiers: run.modifiers,
-    combo: newCombo,
-  });
-
-  // 광맥 HP 감소
+  const dmg = computeDamage({ pickaxe: run.pickaxe, modifiers: run.modifiers, combo: newCombo });
   const newHp = Math.max(0, run.vein.hp - dmg.final);
 
   run = {
@@ -211,23 +240,25 @@ export function mineHit(state: GameState, action: MineHitAction): GameState {
 
   run = appendRunEvent(run, {
     type: 'mine_hit',
-    t: action.payload.t,
+    t: e,
     x: action.payload.x,
     y: action.payload.y,
     damage: dmg.final,
     combo: newCombo,
+    side,
+    miss: false,
   });
 
-  // 광물 드랍 시도 (RNG 사용)
+  // 광물 드랍 + RNG 기반 새 dangerSide 동시 결정 (결정론 유지)
   const rng = new Mulberry32(run.rngState);
-  const drop = tryDrop(
-    run.vein.mineralPool,
-    content,
-    rng,
-    BASE_DROP_CHANCE,
-    run.modifiers.dropRateMul,
-  );
-  run = { ...run, rngState: rng.getState() };
+  const drop = tryDrop(run.vein.mineralPool, content, rng, BASE_DROP_CHANCE, run.modifiers.dropRateMul);
+  // 성공 타격마다 dangerSide 교체 (Timber Rush: 세그먼트 스크롤)
+  const newDangerSide: 'left' | 'right' = rng.next() < 0.5 ? 'left' : 'right';
+  run = {
+    ...run,
+    rngState: rng.getState(),
+    vein: { ...run.vein, hp: newHp, dangerSide: newDangerSide },
+  };
 
   if (drop) {
     const current = run.oresCollected[drop.mineralId] ?? 0;
@@ -237,53 +268,57 @@ export function mineHit(state: GameState, action: MineHitAction): GameState {
     };
     run = appendRunEvent(run, {
       type: 'ore_collected',
-      t: action.payload.t,
+      t: e,
       mineralId: drop.mineralId,
       amount: drop.amount,
     });
+    const mineralDef = content.minerals.get(drop.mineralId);
+    const expGain = mineralDef ? Math.max(1, Math.ceil(mineralDef.baseValue / 6)) : 1;
+    run = { ...run, exp: run.exp + expGain };
   }
 
   // 광맥 파괴 처리
   if (newHp <= 0) {
     run = appendRunEvent(run, {
       type: 'vein_destroyed',
-      t: action.payload.t,
+      t: e,
       veinIndex: run.vein.veinIndex,
     });
-
     const next = buildVein(run.stageId as string, run.depth, run.vein.veinIndex + 1, run.rngState);
-    const veinsDestroyed = run.veinsDestroyed + 1;
     run = {
       ...run,
       vein: next.vein,
       rngState: next.rngState,
-      veinsDestroyed,
+      veinsDestroyed: run.veinsDestroyed + 1,
+      exp: run.exp + 5,
     };
+  }
 
-    // 광맥 부술 때마다 카드 오퍼 생성 (Phase 2: 매번)
-    if (run.cardOffer === null) {
-      const rng2 = new Mulberry32(run.rngState);
-      const offer = rollCardOffer(content, rng2, {
-        pickedCardIds: run.cards.map((c) => c.cardId),
-        progress: progressFromVeinsDestroyed(veinsDestroyed),
-        count: 3,
-        rerollCost: 50 + veinsDestroyed * 20,
-      });
-      run = {
-        ...run,
-        rngState: rng2.getState(),
-        cardOffer: {
-          generatedAt: action.payload.t,
-          cards: offer.cards.map((c) => ({ cardId: c.cardId, rarity: c.rarity })),
-          rerollCost: offer.rerollCost,
-        },
-      };
-      run = appendRunEvent(run, {
-        type: 'card_offer_generated',
-        t: action.payload.t,
-        cardIds: offer.cards.map((c) => c.cardId),
-      });
-    }
+  // EXP 임계값 도달 → 카드 오퍼
+  if (run.cardOffer === null && run.exp >= run.expThreshold) {
+    const rng2 = new Mulberry32(run.rngState);
+    const offer = rollCardOffer(content, rng2, {
+      pickedCardIds: run.cards.map((c) => c.cardId),
+      progress: progressFromVeinsDestroyed(run.veinsDestroyed),
+      count: 3,
+      rerollCost: 50 + run.cards.length * 20,
+    });
+    run = {
+      ...run,
+      rngState: rng2.getState(),
+      exp: run.exp - run.expThreshold,
+      expThreshold: run.expThreshold + 10,
+      cardOffer: {
+        generatedAt: e,
+        cards: offer.cards.map((c) => ({ cardId: c.cardId, rarity: c.rarity })),
+        rerollCost: offer.rerollCost,
+      },
+    };
+    run = appendRunEvent(run, {
+      type: 'card_offer_generated',
+      t: e,
+      cardIds: offer.cards.map((c) => c.cardId),
+    });
   }
 
   return { ...state, run };
@@ -373,7 +408,7 @@ export function cardPicked(state: GameState, action: CardPickedAction): GameStat
     def.magnitude,
   );
 
-  let run = {
+  let run: RunState = {
     ...state.run,
     modifiers: newModifiers,
     cards: [...state.run.cards, { cardId: def.id, pickedAt: action.payload.t }],
@@ -399,7 +434,7 @@ export function cardReroll(state: GameState, action: CardRerollAction): GameStat
     rerollCost: Math.round(state.run.cardOffer.rerollCost * 1.5),
   });
 
-  let run = {
+  let run: RunState = {
     ...state.run,
     rngState: rng.getState(),
     cardOffer: {

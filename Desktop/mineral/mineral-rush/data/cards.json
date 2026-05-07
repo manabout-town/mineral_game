@@ -9,12 +9,36 @@
       "description": { "ko": "곡괭이 데미지 +15%", "en": "Pickaxe damage +15%" }
     },
     {
+      "id": "tempered_head",
+      "name": { "ko": "단조된 헤드", "en": "Tempered Head" },
+      "rarity": "common",
+      "effect": "damage_mul",
+      "magnitude": 0.18,
+      "description": { "ko": "곡괭이 데미지 +18%", "en": "Pickaxe damage +18%" }
+    },
+    {
+      "id": "calloused_grip",
+      "name": { "ko": "굳은살 그립", "en": "Calloused Grip" },
+      "rarity": "common",
+      "effect": "damage_mul",
+      "magnitude": 0.12,
+      "description": { "ko": "곡괭이 데미지 +12%", "en": "Pickaxe damage +12%" }
+    },
+    {
       "id": "steady_hands",
       "name": { "ko": "안정된 손", "en": "Steady Hands" },
       "rarity": "common",
       "effect": "combo_window_ms",
       "magnitude": 300,
       "description": { "ko": "콤보 유지 시간 +300ms", "en": "Combo window +300ms" }
+    },
+    {
+      "id": "rhythm_keeper",
+      "name": { "ko": "박자 유지자", "en": "Rhythm Keeper" },
+      "rarity": "common",
+      "effect": "combo_window_ms",
+      "magnitude": 400,
+      "description": { "ko": "콤보 유지 시간 +400ms", "en": "Combo window +400ms" }
     },
     {
       "id": "appraiser_eye",
@@ -25,12 +49,36 @@
       "description": { "ko": "광석 가치 +20%", "en": "Ore value +20%" }
     },
     {
+      "id": "haggling_tongue",
+      "name": { "ko": "흥정의 혀", "en": "Haggling Tongue" },
+      "rarity": "common",
+      "effect": "ore_value_mul",
+      "magnitude": 0.15,
+      "description": { "ko": "광석 가치 +15%", "en": "Ore value +15%" }
+    },
+    {
       "id": "lucky_strike",
       "name": { "ko": "행운의 일격", "en": "Lucky Strike" },
       "rarity": "common",
       "effect": "drop_rate_mul",
       "magnitude": 0.25,
       "description": { "ko": "드랍률 +25%", "en": "Drop rate +25%" }
+    },
+    {
+      "id": "scavengers_charm",
+      "name": { "ko": "노획자의 부적", "en": "Scavenger's Charm" },
+      "rarity": "common",
+      "effect": "drop_rate_mul",
+      "magnitude": 0.18,
+      "description": { "ko": "드랍률 +18%", "en": "Drop rate +18%" }
+    },
+    {
+      "id": "warmup",
+      "name": { "ko": "준비운동", "en": "Warm-up" },
+      "rarity": "common",
+      "effect": "combo_max_bonus",
+      "magnitude": 0.01,
+      "description": { "ko": "콤보 1당 데미지 +1%", "en": "Damage +1% per combo stack" }
     },
     {
       "id": "deep_breath",
@@ -41,15 +89,181 @@
       "description": { "ko": "곡괭이 데미지 +40%", "en": "Pickaxe damage +40%" }
     },
     {
+      "id": "ancestral_strength",
+      "name": { "ko": "선조의 힘", "en": "Ancestral Strength" },
+      "rarity": "rare",
+      "effect": "damage_mul",
+      "magnitude": 0.45,
+      "description": { "ko": "곡괭이 데미지 +45%", "en": "Pickaxe damage +45%" }
+    },
+    {
       "id": "miners_focus",
       "name": { "ko": "광부의 집중", "en": "Miner's Focus" },
       "rarity": "rare",
       "effect": "combo_max_bonus",
       "magnitude": 0.02,
       "description": {
-        "ko": "콤보 1당 데미지 +2% (최대 무한)",
+        "ko": "콤보 1당 데미지 +2%",
         "en": "Damage +2% per combo stack"
       }
+    },
+    {
+      "id": "metronome",
+      "name": { "ko": "메트로놈", "en": "Metronome" },
+      "rarity": "rare",
+      "effect": "combo_window_ms",
+      "magnitude": 800,
+      "description": { "ko": "콤보 유지 시간 +800ms", "en": "Combo window +800ms" }
+    },
+    {
+      "id": "gold_tooth",
+      "name": { "ko": "황금 어금니", "en": "Gold Tooth" },
+      "rarity": "rare",
+      "effect": "ore_value_mul",
+      "magnitude": 0.4,
+      "description": { "ko": "광석 가치 +40%", "en": "Ore value +40%" }
+    },
+    {
+      "id": "magnetic_glove",
+      "name": { "ko": "자성 장갑", "en": "Magnetic Glove" },
+      "rarity": "rare",
+      "effect": "drop_rate_mul",
+      "magnitude": 0.45,
+      "description": { "ko": "드랍률 +45%", "en": "Drop rate +45%" }
+    },
+    {
+      "id": "second_wind",
+      "name": { "ko": "두 번째 호흡", "en": "Second Wind" },
+      "rarity": "rare",
+      "effect": "combo_window_ms",
+      "magnitude": 600,
+      "description": { "ko": "콤보 유지 시간 +600ms", "en": "Combo window +600ms" }
+    },
+    {
+      "id": "berserker_call",
+      "name": { "ko": "광전사의 부름", "en": "Berserker's Call" },
+      "rarity": "epic",
+      "effect": "damage_mul",
+      "magnitude": 0.85,
+      "description": { "ko": "곡괭이 데미지 +85%", "en": "Pickaxe damage +85%" }
+    },
+    {
+      "id": "perfect_swing",
+      "name": { "ko": "완벽한 스윙", "en": "Perfect Swing" },
+      "rarity": "epic",
+      "effect": "combo_max_bonus",
+      "magnitude": 0.04,
+      "description": {
+        "ko": "콤보 1당 데미지 +4%",
+        "en": "Damage +4% per combo stack"
+      }
+    },
+    {
+      "id": "midas_chisel",
+      "name": { "ko": "미다스의 정", "en": "Midas Chisel" },
+      "rarity": "epic",
+      "effect": "ore_value_mul",
+      "magnitude": 0.85,
+      "description": { "ko": "광석 가치 +85%", "en": "Ore value +85%" }
+    },
+    {
+      "id": "veinseeker",
+      "name": { "ko": "광맥 탐지기", "en": "Veinseeker" },
+      "rarity": "epic",
+      "effect": "drop_rate_mul",
+      "magnitude": 0.8,
+      "description": { "ko": "드랍률 +80%", "en": "Drop rate +80%" }
+    },
+    {
+      "id": "long_breath",
+      "name": { "ko": "긴 숨", "en": "Long Breath" },
+      "rarity": "epic",
+      "effect": "combo_window_ms",
+      "magnitude": 1200,
+      "description": { "ko": "콤보 유지 시간 +1200ms", "en": "Combo window +1200ms" }
+    },
+    {
+      "id": "wild_swing",
+      "name": { "ko": "거친 스윙", "en": "Wild Swing" },
+      "rarity": "epic",
+      "effect": "damage_mul",
+      "magnitude": 1.0,
+      "description": { "ko": "곡괭이 데미지 +100%", "en": "Pickaxe damage +100%" }
+    },
+    {
+      "id": "earth_crusher",
+      "name": { "ko": "대지 분쇄자", "en": "Earth Crusher" },
+      "rarity": "legendary",
+      "effect": "damage_mul",
+      "magnitude": 1.8,
+      "description": { "ko": "곡괭이 데미지 +180%", "en": "Pickaxe damage +180%" }
+    },
+    {
+      "id": "tempo_god",
+      "name": { "ko": "박자의 신", "en": "Tempo God" },
+      "rarity": "legendary",
+      "effect": "combo_max_bonus",
+      "magnitude": 0.08,
+      "description": {
+        "ko": "콤보 1당 데미지 +8%",
+        "en": "Damage +8% per combo stack"
+      }
+    },
+    {
+      "id": "midas_touch",
+      "name": { "ko": "미다스의 손", "en": "Midas Touch" },
+      "rarity": "legendary",
+      "effect": "ore_value_mul",
+      "magnitude": 1.6,
+      "description": { "ko": "광석 가치 +160%", "en": "Ore value +160%" }
+    },
+    {
+      "id": "vein_oracle",
+      "name": { "ko": "광맥의 신탁", "en": "Vein Oracle" },
+      "rarity": "legendary",
+      "effect": "drop_rate_mul",
+      "magnitude": 1.5,
+      "description": { "ko": "드랍률 +150%", "en": "Drop rate +150%" }
+    },
+    {
+      "id": "infinite_swing",
+      "name": { "ko": "무한 스윙", "en": "Infinite Swing" },
+      "rarity": "legendary",
+      "effect": "combo_window_ms",
+      "magnitude": 2000,
+      "description": { "ko": "콤보 유지 시간 +2000ms", "en": "Combo window +2000ms" }
+    },
+    {
+      "id": "pickaxe_savant",
+      "name": { "ko": "곡괭이 명인", "en": "Pickaxe Savant" },
+      "rarity": "rare",
+      "effect": "damage_mul",
+      "magnitude": 0.55,
+      "description": { "ko": "곡괭이 데미지 +55%", "en": "Pickaxe damage +55%" }
+    },
+    {
+      "id": "loose_change",
+      "name": { "ko": "잔돈 줍기", "en": "Loose Change" },
+      "rarity": "rare",
+      "effect": "ore_value_mul",
+      "magnitude": 0.32,
+      "description": { "ko": "광석 가치 +32%", "en": "Ore value +32%" }
+    },
+    {
+      "id": "smelters_kiss",
+      "name": { "ko": "제련공의 키스", "en": "Smelter's Kiss" },
+      "rarity": "epic",
+      "effect": "ore_value_mul",
+      "magnitude": 0.65,
+      "description": { "ko": "광석 가치 +65%", "en": "Ore value +65%" }
+    },
+    {
+      "id": "double_pull",
+      "name": { "ko": "더블 풀", "en": "Double Pull" },
+      "rarity": "rare",
+      "effect": "drop_rate_mul",
+      "magnitude": 0.6,
+      "description": { "ko": "드랍률 +60%", "en": "Drop rate +60%" }
     }
   ]
 }

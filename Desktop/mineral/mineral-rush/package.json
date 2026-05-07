@@ -15,7 +15,9 @@
     "test:watch": "vitest",
     "sim": "tsx tools/balance-sim.ts",
     "sim:1k": "tsx tools/balance-sim.ts --runs 1000",
-    "sim:no-cards": "tsx tools/balance-sim.ts --runs 1000 --pickCards false"
+    "sim:no-cards": "tsx tools/balance-sim.ts --runs 1000 --pickCards false",
+    "validate-content": "tsx tools/content-validator.ts",
+    "bundle:edge": "tsx tools/bundle-edge-fn.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.45.0",
@@ -30,6 +32,7 @@
     "@typescript-eslint/eslint-plugin": "^8.13.0",
     "@typescript-eslint/parser": "^8.13.0",
     "@vitejs/plugin-react": "^4.3.3",
+    "esbuild": "^0.28.0",
     "eslint": "^8.57.1",
     "eslint-plugin-boundaries": "^4.2.2",
     "eslint-plugin-react-hooks": "^5.0.0",

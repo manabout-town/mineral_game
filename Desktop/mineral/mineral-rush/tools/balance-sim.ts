@@ -17,9 +17,8 @@
  * Node 환경에서 실행 (Vite 의존성 import 없음 — 순수 core/systems만 사용).
  */
 
-import { createInitialState, type GameState } from '../src/core/State.ts';
+import { createInitialState } from '../src/core/State.ts';
 import { rootReducer } from '../src/core/reducers/index.ts';
-import type { Action } from '../src/core/Actions.ts';
 import { asRunId, asStageId } from '../src/shared/ids.ts';
 import { asGameTimeMs } from '../src/core/reducers/runReducer.ts';
 import { content } from '../src/core/content/index.ts';

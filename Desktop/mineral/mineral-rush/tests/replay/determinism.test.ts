@@ -33,11 +33,12 @@ function generateRunSequence(seed: number): Action[] {
       },
     },
   ];
-  // 50회 탭 (간격 200ms = 5 hits/sec)
+  // 50회 탭 (간격 200ms = 5 hits/sec) — 좌/우 교대 (Timber Rush 메카닉 반영)
   for (let i = 0; i < 50; i++) {
+    const side: 'left' | 'right' = i % 2 === 0 ? 'right' : 'left';
     seq.push({
       type: 'MINE_HIT',
-      payload: { t: asGameTimeMs(200 + i * 200), x: 0, y: 0 },
+      payload: { t: asGameTimeMs(200 + i * 200), x: 0, y: 0, side },
     });
   }
   // 결과적으로 광맥 여러 개 부수고 카드 오퍼가 생기지만, 카드 픽은 안 함 (Phase 2 회귀)

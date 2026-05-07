@@ -46,6 +46,8 @@ export function rootReducer(state: GameState, action: Action): GameState {
       return economyReducer.applyRunReward(state, action);
     case 'SKILL_NODE_UNLOCK':
       return metaReducer.unlockSkillNode(state, action);
+    case 'SKILL_NODE_LEVEL_UP':
+      return metaReducer.levelUpSkillNode(state, action);
 
     // -- Persistence --
     case 'STATE_HYDRATE':

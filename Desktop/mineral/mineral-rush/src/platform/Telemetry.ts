@@ -1,13 +1,18 @@
 /**
- * Telemetry — LocalStorage 기반 이벤트 적재.
+ * Telemetry — LocalStorage 기반 이벤트 적재 + 원격 포워딩 (Phase 4-G).
  *
- * Phase 2 플레이테스트용. 테스터가 brower devtools 없이도
- * UI의 "Export" 버튼으로 JSON 다운로드 가능.
+ * Phase 2: LocalStorage만 사용 (플레이테스트 Export 버튼).
+ * Phase 4-G: ITelemetrySink 주입으로 Amplitude / Mixpanel에 실시간 포워딩.
+ *   - LocalStorage는 백업으로 유지 (export 기능 보존).
+ *   - Sink 실패는 silently 처리 — 게임 진행 영향 없음.
  *
- * Phase 4에서 Mixpanel/Amplitude로 forwarding 추가 (LocalStorage는 백업으로 유지).
+ * 활성화 예시 (App.tsx):
+ *   const sink = new AmplitudeSink(import.meta.env.VITE_AMPLITUDE_API_KEY);
+ *   const telemetry = new Telemetry(platform, sink);
  */
 
 import type { IPlatformAdapter } from './IPlatformAdapter.ts';
+import { type ITelemetrySink, NullTelemetrySink } from './ITelemetrySink.ts';
 
 const KEY = 'mineral_rush:telemetry';
 const SESSION_KEY = 'mineral_rush:session_id';
@@ -51,11 +56,26 @@ export class Telemetry {
   private buffer: TelemetryEvent[] = [];
   private meta: TelemetryMeta;
   private flushTimer: number | null = null;
+  private readonly sink: ITelemetrySink;
 
-  constructor(private readonly platform: IPlatformAdapter) {
+  constructor(
+    private readonly platform: IPlatformAdapter,
+    sink?: ITelemetrySink,
+  ) {
+    this.sink = sink ?? new NullTelemetrySink();
     this.meta = this.loadOrCreateMeta();
     this.buffer = this.loadEvents();
     this.nextId = this.buffer.reduce((m, e) => Math.max(m, e.id), 0) + 1;
+    // sink 비동기 초기화 (실패 무시)
+    void this.sink.init().catch(() => { /* silently ignored */ });
+  }
+
+  /**
+   * playerId 확보 후 호출 — 원격 싱크에 사용자 식별자 전달.
+   * (GameState 로드 완료 후 Game.ts에서 한 번 호출)
+   */
+  identify(playerId: string): void {
+    this.sink.identify(playerId);
   }
 
   track(name: string, props: Record<string, unknown> = {}): void {
@@ -70,7 +90,15 @@ export class Telemetry {
     this.meta.lastEventAt = ev.ts;
     if (this.meta.firstEventAt === 0) this.meta.firstEventAt = ev.ts;
     this.scheduleFlush();
-    // 분석 SDK로도 전달 (Phase 4)
+    // Phase 4-G: 원격 싱크 포워딩 (LocalStorage는 백업으로 유지)
+    this.sink.send({
+      name,
+      ts: ev.ts,
+      props,
+      sessionId: this.meta.sessionId,
+      gameVersion: this.meta.gameVersion,
+    });
+    // 플랫폼 어댑터 이벤트도 유지 (크로스 플랫폼 호환)
     this.platform.trackEvent(name, props);
   }
 

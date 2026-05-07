@@ -23,4 +23,10 @@ export interface GameRenderer {
 
   /** 자원 해제. */
   destroy(): void;
+
+  /**
+   * 광맥 파괴 시 파티클 폭발 이펙트 (선택적 구현).
+   * PixiGameRenderer에서 구현. StubRenderer / 테스트 환경에서는 noop.
+   */
+  spawnVeinBurst?(x?: number, y?: number, color?: number): void;
 }

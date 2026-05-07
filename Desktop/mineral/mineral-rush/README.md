@@ -7,7 +7,7 @@
 ## 프레임워크 준수
 
 - **UNIVERSAL_GAME_FRAMEWORK_v1** — 4-Layer 아키텍처 (Core ← Systems ← Platform ← View)
-- **GAME_STEP_NAVIGATOR_v1** — 5-Phase 진행 (현재 Phase 1: Skeleton)
+- **GAME_STEP_NAVIGATOR_v1** — 5-Phase 진행 (현재 Phase 3: Content Expansion 진입)
 - **CLAUDE_COWORK_PROMPT_PACK_v2** — 작업 시 6색 프롬프트 사용
 
 ### 5계명
@@ -52,6 +52,8 @@ npm run dev          # http://localhost:5173
 | `npm test` | Vitest 단위 테스트 (1회) |
 | `npm run test:watch` | 테스트 watch 모드 |
 | `npm run format` | Prettier 적용 |
+| `npm run sim` / `sim:1k` / `sim:no-cards` | balance-sim 봇 (광석 음수 0 검증, 카드 픽률 등) |
+| `npm run validate-content` | data/*.json 시트 무결성 검사 (id 유니크, prerequisites, 곡선 등) |
 
 ## 환경 변수
 
@@ -92,7 +94,7 @@ npm run dev          # http://localhost:5173
 | Game (루프 글루) + React App 셸 | ✅ |
 | CI/CD (GitHub Actions) | ✅ |
 
-## Phase 2 진행 상태
+## Phase 2 진행 상태 ✅ 완료
 
 | 작업 | 상태 |
 |---|---|
@@ -105,7 +107,41 @@ npm run dev          # http://localhost:5173
 | UI: CardOfferModal + ResultScreen | ✅ |
 | 단위 테스트(rules) + 회귀 테스트(tests/replay/) | ✅ |
 | balance-sim 도구 (1000회 시뮬레이션 봇) | ✅ |
-| **Gate Check (외부 테스터 5명)** | 진행 필요 |
+| Telemetry 어댑터 + Game 통합 (이벤트 자동 추적 + Lobby Export 버튼) | ✅ |
+| **Gate Check (외부 테스터 5명)** | 외부 진행 |
+
+## Phase 3 진행 상태 (Content Expansion)
+
+| 작업 | 상태 |
+|---|---|
+| 콘텐츠 시트 확장 — 광물 12 / 곡괭이 8 / 카드 32 / 스테이지 5 / 스킬노드 22 | ✅ |
+| `tools/content-validator.ts` (id/곡선/prerequisite/cycle 검증) | ✅ |
+| Scene 시스템 — Lobby ↔ Run ↔ Result + Pause로 Lobby 복귀 | ✅ |
+| 스킬트리 패널 (UI) + metaReducer.unlockSkillNode / levelUpSkillNode | ✅ |
+| `core/rules/skillTree.ts` — 비용 곡선 + computeMetaModifiers + crystal_run_bonus | ✅ |
+| `core/rules/depthProgress.ts` — 광맥 N개 부수면 자동 DEPTH_ADVANCE | ✅ |
+| Stage 매칭 (depth → stageId) + RUN_START 시 stage override | ✅ |
+| `IAudioManager` + `StubAudioManager` + Game 액션→SFX 매핑 | ✅ |
+| Supabase 스캐폴드 — `supabase/migrations/0001_init.sql` + `functions/validate-run/` | ✅ |
+| CI에 `validate-content` + `sim:1k` 추가 | ✅ |
+| **Gate Check** (베타 빌드 + 평균 세션 10분 + 카드 다양성) | 외부 진행 |
+
+## Phase 3 Gate Check
+
+| 항목 | 검증 방법 |
+|---|---|
+| 평균 신규 유저 첫 세션 10분 이상 | 외부 베타 |
+| 동일 카드를 매번 고르는 비율 30% 이하 | `npm run sim:1k` 후 card pick rates |
+| 1000런 시뮬에서 카드 빌드 클러스터 5+ 아키타입 | balance-sim 결과 분석 |
+| 씬 전환 100회 메모리 누수 30MB 이하 | Chrome Performance |
+| 메인 메뉴 → 결과 화면까지 풀 플로우 무에러 | 수동 + Playwright (Phase 4) |
+
+## Phase 3 → Phase 4 인계
+
+- 메타 진행도(skillTree)가 RunStart의 baseline 모디파이어로 적용됨 — 카드 효과는 그 위에 누적
+- 깊이 자동 진행 (광맥 N개 → depth+1)이 동작 — stage 자동 전환 포함
+- `supabase/migrations/0001_init.sql` 적용 후 `validate-run` Edge Function 배포로 Phase 4 안티치트 본격 진입
+- Telemetry는 LocalStorage 저장 → Lobby에서 JSON Export 가능. Phase 4에서 Mixpanel/Amplitude로 forwarding 추가
 
 ## Phase 2 Gate Check
 
@@ -118,15 +154,16 @@ npm run dev          # http://localhost:5173
 | 저장/불러오기 메타 화폐 보존 | 새로고침 후 💎 카운터 유지 |
 | 동일 카드 픽률 30% 이하 | `npm run sim:1k` 후 card pick rates 확인 |
 
-## 다음 단계 (Phase 3 Content Expansion)
+## 다음 단계 (Phase 4 Hardening)
 
-`MINERAL_RUSH_개발_로드맵.md` §3 Phase 3 참조.
+`MINERAL_RUSH_개발_로드맵.md` §3 Phase 4 참조.
 
-- 광물 12종 / 곡괭이 5종 / 카드 60종 / 스킬트리 60노드 / 스테이지 3종
-- 다중 씬 (LobbyScene ↔ RunScene ↔ ResultScene)
-- 메인 메뉴 / 스킬트리 / 일일 미션 / 도전과제
-- 사운드 통합 (오디오 스프라이트)
-- 텍스처 아틀라스 빌드 파이프라인
+- 서버 권위 안티치트: Edge Function `validate-run` 본격 구현 (`src/core` 코드를 Deno bundle 로 사용)
+- HMAC 시그니처 + 타임스탬프 윈도우 ±60s + 통계 임계
+- 텍스처 아틀라스 + 오디오 스프라이트 + 오브젝트 풀링 + 동적 해상도
+- Sentry / Mixpanel(Amplitude) 통합 — Telemetry forwarder
+- Feature Flags + Maintenance Mode 클라 부팅 핸들러
+- 디바이스 매트릭스 60FPS 검증 (저사양 폰 포함)
 
 ## 보안 / 안티치트 (Phase 4 본격 작업, 지금은 골격만)
 
@@ -137,7 +174,24 @@ npm run dev          # http://localhost:5173
 
 ## Supabase
 
-- 프로젝트: `mineral-rush` (region `ap-northeast-2`)
-- URL/Key는 `.env`에 박힘
-- Phase 1 단계에서는 클라이언트가 Supabase에 접근하지 않습니다 (테이블 0개)
-- Phase 4에서 테이블 스키마(profiles, runs, ledger, feature_flags 등) 추가 예정
+- 프로젝트: `mineral-rush` (region `ap-southeast-2` 또는 사용자 선택 — `.env` 갱신)
+- URL/Key는 `.env`에 박힘 (git 커밋 금지)
+- Phase 3 시점: 클라이언트는 아직 Supabase에 접속하지 않음. **로컬 스캐폴드만 작성된 상태.**
+- 배포 절차 (사용자 직접 수행 권장):
+  ```bash
+  # 1) Supabase CLI 설치 후 프로젝트 link
+  npx supabase login
+  npx supabase link --project-ref <YOUR_PROJECT_REF>
+
+  # 2) 마이그레이션 적용
+  npx supabase db push
+
+  # 3) Edge Function 배포 (HMAC_SECRET 환경변수 사전 설정)
+  npx supabase secrets set HMAC_SECRET=<32+자 랜덤 문자열>
+  npx supabase functions deploy validate-run
+  ```
+- 본 단계의 마이그레이션 (`supabase/migrations/0001_init.sql`)이 만드는 객체:
+  - `players`, `runs` (RLS: 본인 row만 select/insert)
+  - `feature_flags`, `maintenance` (모두 read-only)
+  - `leaderboard_entries` (read-only, insert는 service_role 전용)
+- `validate-run` Edge Function은 현재 스캐폴드 — Phase 4에서 src/core를 Deno bundle하여 실제 액션 리플레이로 강화
